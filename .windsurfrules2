@@ -46,18 +46,18 @@ export default async function Page({ params }: PageProps) {
 - [X] Initialize Next.js 15 project with TypeScript
 - [X] Set up project structure and folders
 - [X] Configure ESLint and Prettier
-- [ ] Install and configure dependencies:
-  - [ ] Shadcn UI components
-  - [ ] Lucide icons
-  - [ ] Zod for validation
-  - [ ] Zustand for state management
-  - [ ] Recharts for analytics
-  - [ ] Resend for emails
-  - [ ] Uploadthing for file uploads
-  - [ ] Prisma ORM
+- [X] Install and configure dependencies:
+  - [X] Shadcn UI components
+  - [X] Lucide icons
+  - [X] Zod for validation
+  - [X] Zustand for state management
+  - [X] Recharts for analytics
+  - [X] Resend for emails
+  - [X] Uploadthing for file uploads
+  - [X] Prisma ORM
   - [ ] PostgreSQL database
-  - [ ] NextAuth.js beta for authentication
-  - [ ] Paystack for payments
+  - [X] NextAuth.js beta for authentication
+  - [X] Paystack for payments
   - [ ] PWA support (service worker, manifest)
   - [ ] AI-powered search (Perplexity, Algolia, or Gorse)
 
