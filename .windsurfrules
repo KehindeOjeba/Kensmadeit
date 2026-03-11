@@ -1,0 +1,133 @@
+# Scratchpad: Ecommerce Website Development Steps
+
+## Phase 1: Project Setup & Foundation
+1. Initialize Next.js 15 app with TypeScript
+   ```bash
+   npx create-next-app@latest ecommerce-app --typescript --tailwind --eslint --app --src-dir --import-alias "@/*"
+   ```
+2. Install core dependencies
+   ```bash
+   npm install @radix-ui/react-icons @radix-ui/react-slot class-variance-authority clsx tailwind-merge lucide-react zod zustand recharts resend @uploadthing/react prisma @prisma/client next-auth@beta @paystack/paystack
+   npm install -D @types/node
+   ```
+3. Setup Shadcn/ui
+   ```bash
+   npx shadcn-ui@latest init
+   npx shadcn-ui@latest add button card input label form dialog badge dropdown-menu sheet
+   ```
+4. Configure environment variables (.env.local)
+5. Setup PostgreSQL database
+6. Initialize Prisma
+   ```bash
+   npx prisma init
+   ```
+
+## Phase 2: Database Schema & Models
+1. Design database schema for ecommerce
+2. Create Prisma schema with models:
+   - User/Customer
+   - Product
+   - Category
+   - Order
+   - OrderItem
+   - Cart/CartItem
+   - Address
+   - Payment
+3. Run database migration
+   ```bash
+   npx prisma migrate dev --name init
+   ```
+4. Generate Prisma client
+   ```bash
+   npx prisma generate
+   ```
+
+## Phase 3: Authentication & User Management
+1. Setup NextAuth.js configuration
+2. Configure authentication providers (email/password, OAuth options)
+3. Create guest checkout functionality
+4. Build auth pages (login, register, forgot password)
+5. Implement session management
+6. Create user profile management
+
+## Phase 4: Core Ecommerce Features
+1. Product Management
+   - Product listing page
+   - Product detail page
+   - Product search and filtering
+   - Category management
+2. Shopping Cart
+   - Add to cart functionality
+   - Cart management (update quantities, remove items)
+   - Cart persistence for guests
+3. Checkout Process
+   - Multi-step checkout flow
+   - Shipping address form
+   - Payment method selection
+   - Order summary
+4. Payment Integration
+   - Integrate Paystack payment gateway
+   - Handle payment success/failure
+   - Webhook handling for payment confirmation
+
+## Phase 5: Admin Dashboard
+1. Admin authentication and authorization
+2. Product management (CRUD operations)
+3. Order management dashboard
+4. Customer management
+5. Analytics and reporting with Recharts
+6. Inventory management
+
+## Phase 6: Additional Features
+1. File Upload with Uploadthing
+   - Product image uploads
+   - Image optimization and storage
+2. Email Notifications with Resend
+   - Order confirmation emails
+   - Shipping notifications
+   - Password reset emails
+3. State Management with Zustand
+   - Cart state management
+   - User preferences
+   - UI state management
+
+## Phase 7: UI/UX & Styling
+1. Design system implementation with Shadcn
+2. Responsive design for mobile/tablet/desktop
+3. Loading states and error handling
+4. Accessibility improvements
+5. SEO optimization
+
+## Phase 8: Testing & Deployment
+1. Unit and integration tests
+2. E2E testing setup
+3. Performance optimization
+4. Security audit
+5. Deployment configuration
+6. Environment setup for production
+
+## Phase 9: Advanced Features (Optional)
+1. Wishlist functionality
+2. Product reviews and ratings
+3. Coupon/discount system
+4. Inventory tracking
+5. Shipping calculator
+6. Tax calculation
+7. Order tracking
+8. Return/refund management
+
+## Key Configuration Files to Create:
+- `.env.local` - Environment variables
+- `prisma/schema.prisma` - Database schema
+- `lib/auth.ts` - NextAuth configuration
+- `lib/prisma.ts` - Prisma client setup
+- `lib/paystack.ts` - Paystack integration
+- `lib/resend.ts` - Email service setup
+- `lib/uploadthing.ts` - File upload configuration
+- `components/ui/` - Shadcn components
+- `app/(auth)/` - Authentication pages
+- `app/(shop)/` - Shop pages
+- `app/admin/` - Admin dashboard
+- `hooks/` - Custom hooks
+- `store/` - Zustand stores
+- `types/` - TypeScript type definitions
