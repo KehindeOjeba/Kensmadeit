@@ -1,7 +1,7 @@
 # Scratchpad: Ecommerce Website Development Steps
 
 ## Phase 1: Project Setup & Foundation
-1. Initialize Next.js 15 app with TypeScript
+1. Initialize Next.js 15 app with TypeScripts
    ```bash
    npx create-next-app@latest ecommerce-app --typescript --tailwind --eslint --app --src-dir --import-alias "@/*"
    ```
