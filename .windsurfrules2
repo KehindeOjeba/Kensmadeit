@@ -55,7 +55,7 @@ export default async function Page({ params }: PageProps) {
   - [X] Resend for emails
   - [X] Uploadthing for file uploads
   - [X] Prisma ORM
-  - [ ] PostgreSQL database
+  - [X] PostgreSQL database
   - [X] NextAuth.js beta for authentication
   - [X] Paystack for payments
   - [ ] PWA support (service worker, manifest)
