@@ -8,7 +8,7 @@ config({ path: '.env' })
 const prisma = new PrismaClient()
 
 async function main() {
-  console.log('🌱 Starting database seeding...')
+  console.log('seed')
 
   // Create admin user
   const hashedPassword = await bcrypt.hash('admin123', 12)
@@ -23,7 +23,7 @@ async function main() {
     },
   })
 
-  console.log('✅ Admin user created:', adminUser.email)
+  console.log('created', adminUser.email)
 
   // Create categories
   const categories = [
@@ -55,7 +55,7 @@ async function main() {
       create: categoryData,
     })
     createdCategories.push(category)
-    console.log(`✅ Category created: ${category.name}`)
+    console.log(`Category  ${category.name}`)
   }
 
   // Create products
@@ -143,15 +143,15 @@ async function main() {
       update: {},
       create: productData,
     })
-    console.log(`✅ Product created: ${product.name}`)
+    console.log(`created${product.name}`)
   }
 
-  console.log('🎉 Database seeding completed successfully!')
+  console.log('completed')
 }
 
 main()
   .catch((e) => {
-    console.error('❌ Error during seeding:', e)
+    console.error('Error', e)
     process.exit(1)
   })
   .finally(async () => {
