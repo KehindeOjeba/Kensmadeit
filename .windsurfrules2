@@ -93,19 +93,19 @@ export default async function Page({ params }: PageProps) {
 
 ### 3. Core Features - Customer Side [ ]
 
-- [] Home Layout:
-  - [] Create `(home)` folder in `app` directory
-  - [] In the home page create only a 'Shop now' button
-  - [] The shop now button will take you to the home page
-  - [ ] Header with logo, search bar, and navigation
-  - [ ] Footer with links and social media
+- [X] Home Layout:
+  - [X] Create `(home)` folder in `app` directory
+  - [X] In the home page create only a 'Shop now' button
+  - [X] The shop now button will take you to the home page
+  - [X] Header with logo, search bar, and navigation
+  - [X] Footer with links and social media
 
-- [] Homepage:
-  - [] Header with logo, search bar, and navigation
-  - [] Footer with links and social media
-  - [] Banner carousel
-  - [] Latest products
-  - [] Responsive layout (mobile-first)
+- [X] Homepage:
+  - [X] Header with logo, search bar, and navigation
+  - [X] Footer with links and social media
+  - [X] Banner carousel
+  - [X] Latest products
+  - [X] Responsive layout (mobile-first)
 
 - [ ] Products Catalog:
   - [ ] Sidebar with categories and filters
