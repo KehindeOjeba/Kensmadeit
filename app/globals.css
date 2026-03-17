@@ -122,8 +122,9 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-poppins) !important;
   }
   html {
-    @apply font-sans;
+    font-family: var(--font-poppins) !important;
   }
 }
