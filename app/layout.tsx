@@ -3,9 +3,10 @@ import { Poppins } from "next/font/google";
 import "./globals.css";
 
 const poppins = Poppins({
-  variable: "--font-poppins",
   subsets: ["latin"],
-  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-poppins",
+  style: ["normal", "italic"],
 });
 
 export const metadata: Metadata = {
@@ -21,7 +22,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${poppins.variable} font-poppins antialiased`}
+        className={`${poppins.variable} antialiased`}
+        style={{ fontFamily: 'var(--font-poppins)' }}
       >
         {children}
       </body>
