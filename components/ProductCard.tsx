@@ -40,6 +40,7 @@ export default function ProductCard({ product, loading }: ProductCardProps) {
   const router = useRouter()
   const { addItem } = useCart()
   const [showDialog, setShowDialog] = useState(false)
+  const [isPressed, setIsPressed] = useState(false)
 
   const handleAddToCart = () => {
     if (!product) return
@@ -68,7 +69,13 @@ export default function ProductCard({ product, loading }: ProductCardProps) {
   }
   return (
     <>
-      <Card className="group overflow-hidden hover:shadow-lg transition-shadow">
+      <Card
+        onPointerDown={() => setIsPressed(true)}
+        onPointerUp={() => setIsPressed(false)}
+        onPointerLeave={() => setIsPressed(false)}
+        onPointerCancel={() => setIsPressed(false)}
+        className={`group relative overflow-hidden border border-slate-200 bg-white shadow-sm transition-transform duration-300 ease-out hover:-translate-y-0.5 hover:shadow-md active:scale-[0.98] active:shadow-lg focus-within:outline-none focus-within:ring-2 focus-within:ring-orange-500 ${isPressed ? 'scale-[0.98] shadow-lg' : ''}`}
+      >
         <CardContent className="p-0">
           {loading ? (
             <div className="p-4 space-y-4">
@@ -85,23 +92,24 @@ export default function ProductCard({ product, loading }: ProductCardProps) {
           ) : (
             <>
               <div className="relative">
-                <Link href={`/shop/product/${product?.slug || product?.id}`}>
-                  <div className="relative h-64 md:h-72 overflow-hidden">
+                <Link href={`/shop/product/${product?.slug || product?.id}`} aria-label={`View ${product?.name}`}>
+                  <div className="relative h-64 md:h-72 overflow-hidden rounded-lg bg-slate-100 transition-transform duration-300 ease-out group-hover:scale-105 group-active:scale-105">
                     {product?.image && (
                       <Image
                         src={product.image}
                         alt={product.name}
                         fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                        className="object-cover"
                       />
                     )}
+                    <div className={`pointer-events-none absolute inset-0 bg-black/0 transition-colors duration-300 ${isPressed ? 'bg-black/10' : 'group-hover:bg-black/10 group-active:bg-black/10'}`} />
                     {product?.isNew && (
                       <span className="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 text-xs rounded">
                         New
                       </span>
                     )}
                     {product?.isOnSale && (
-                      <span className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 text-xs rounded">
+                      <span className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 text-xs rounded mt-8">
                         Sale
                       </span>
                     )}
@@ -157,7 +165,7 @@ export default function ProductCard({ product, loading }: ProductCardProps) {
                     )}
                   </div>
 
-                  <Button size="sm" className="text-xs" onClick={handleAddToCart}>
+                  <Button size="sm" className="w-full sm:w-auto text-xs" onClick={handleAddToCart}>
                     Add to Cart
                   </Button>
                 </div>

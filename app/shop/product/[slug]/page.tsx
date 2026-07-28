@@ -5,8 +5,6 @@ import Image from 'next/image'
 import { useRouter, useParams } from 'next/navigation'
 import { Product, Review } from '@/lib/types'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
 import {
   Dialog,
   DialogContent,
@@ -41,14 +39,6 @@ export default function ProductPage() {
   const [selectedImage, setSelectedImage] = useState(0)
   const [quantity, setQuantity] = useState(1)
   const [showAddedDialog, setShowAddedDialog] = useState(false)
-  const [showReviewForm, setShowReviewForm] = useState(false)
-  const [reviewData, setReviewData] = useState({
-    name: '',
-    email: '',
-    rating: 5,
-    comment: '',
-  })
-  const [submittingReview, setSubmittingReview] = useState(false)
   const [selectedSize, setSelectedSize] = useState('')
   const [selectedColor, setSelectedColor] = useState('')
   const { addItem } = useCart()
@@ -91,24 +81,6 @@ export default function ProductPage() {
     }
   }, [product])
 
-  useEffect(() => {
-    if (!product?.colors?.length || !product?.images?.length || !selectedColor) return
-
-    const normalizedColor = selectedColor.toLowerCase()
-
-    const filenameMatchIndex = product.images.findIndex((image) =>
-      image.toLowerCase().includes(normalizedColor)
-    )
-
-    const colorIndex = filenameMatchIndex !== -1
-      ? filenameMatchIndex
-      : product.colors.findIndex((color) => color.toLowerCase() === normalizedColor)
-
-    if (colorIndex !== -1 && product.images[colorIndex] && selectedImage !== colorIndex) {
-      setSelectedImage(colorIndex)
-    }
-  }, [selectedColor, product, selectedImage])
-
   const handleAddToCart = () => {
     if (!product) return
 
@@ -142,38 +114,10 @@ export default function ProductPage() {
     router.push('/shop')
   }
 
-  const handleSubmitReview = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!product) return
-
-    setSubmittingReview(true)
-    try {
-      const res = await fetch(`/api/reviews`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          productId: product.id,
-          ...reviewData,
-        }),
-      })
-
-      if (!res.ok) throw new Error('Failed to submit review')
-
-     
-      setReviewData({ name: '', email: '', rating: 5, comment: '' })
-      setShowReviewForm(false)
-   
-      window.location.reload()
-    } catch (err) {
-      alert(err instanceof Error ? err.message : 'Failed to submit review')
-    } finally {
-      setSubmittingReview(false)
-    }
-  }
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+      <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100">
         <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
           <div className="bg-white rounded-lg shadow-sm overflow-hidden mb-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6 md:p-10">
@@ -263,8 +207,8 @@ export default function ProductPage() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-        <div className="bbg-linear-to-br from-black via-gray-900 to-orange-900 rounded-lg shadow-sm overflow-hidden mb-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6 md:p-10">
+        <div className="bg-linear-to-br from-black via-gray-900 to-orange-900 rounded-lg shadow-sm overflow-hidden mb-8">
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 p-6 md:p-10">
          
             <div>
               <div className="relative h-96 bg-slate-100 rounded-lg overflow-hidden mb-4">
@@ -284,7 +228,7 @@ export default function ProductPage() {
                     <button
                       key={idx}
                       onClick={() => setSelectedImage(idx)}
-                      className={`relative h-20 w-20 rounded-lg overflow-hidden flex-shrink-0 border-2 transition ${
+                      className={`relative h-20 w-20 rounded-lg overflow-hidden shrink-0 border-2 transition ${
                         selectedImage === idx
                           ? 'border-orange-600'
                           : 'border-slate-200 hover:border-slate-300'
@@ -497,84 +441,13 @@ export default function ProductPage() {
 
         
         <div className="bg-white rounded-lg shadow-sm p-6 md:p-10 mb-8">
-          <h2 className="text-2xl font-bold text-slate-900 mb-6">
+          <h2 className="text-2xl font-bold text-slate-900 mb-4">
             Customer Reviews
           </h2>
+          <p className="text-sm text-slate-600 mb-6">
+            Review submission is only available after delivery. You can still browse feedback from other buyers.
+          </p>
 
-         
-          <Button
-            onClick={() => setShowReviewForm(!showReviewForm)}
-            variant="outline"
-            className="mb-6"
-          >
-            {showReviewForm ? 'Cancel' : 'Write a Review'}
-          </Button>
-
-         
-          {showReviewForm && (
-            <form onSubmit={handleSubmitReview} className="mb-8 p-6 bg-slate-50 rounded-lg">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                <Input
-                  type="text"
-                  placeholder="Your Name"
-                  required
-                  value={reviewData.name}
-                  onChange={(e) =>
-                    setReviewData({ ...reviewData, name: e.target.value })
-                  }
-                />
-                <Input
-                  type="email"
-                  placeholder="Your Email"
-                  required
-                  value={reviewData.email}
-                  onChange={(e) =>
-                    setReviewData({ ...reviewData, email: e.target.value })
-                  }
-                />
-              </div>
-
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-slate-900 mb-2">
-                  Rating
-                </label>
-                <div className="flex gap-2">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <button
-                      key={star}
-                      type="button"
-                      onClick={() => setReviewData({ ...reviewData, rating: star })}
-                    >
-                      <Star
-                        size={24}
-                        className={
-                          star <= reviewData.rating
-                            ? 'fill-yellow-400 text-yellow-400'
-                            : 'text-slate-300'
-                        }
-                      />
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="mb-4">
-                <Textarea
-                  placeholder="Your Review"
-                  value={reviewData.comment}
-                  onChange={(e) =>
-                    setReviewData({ ...reviewData, comment: e.target.value })
-                  }
-                />
-              </div>
-
-              <Button type="submit" disabled={submittingReview}>
-                {submittingReview ? 'Submitting...' : 'Submit Review'}
-              </Button>
-            </form>
-          )}
-
-         
           {product.reviews && product.reviews.length > 0 ? (
             <div className="space-y-6">
               {product.reviews.map((review) => (
@@ -606,7 +479,7 @@ export default function ProductPage() {
             </div>
           ) : (
             <p className="text-slate-600 text-center py-8">
-              No reviews yet. Be the first to review this product!
+              No reviews yet. Reviews can be submitted after delivery.
             </p>
           )}
         </div>
