@@ -1,10 +1,10 @@
 import NextAuth from "next-auth"
 import { PrismaClient } from '@prisma/client'
 import Credentials from "next-auth/providers/credentials"
+import bcrypt from "bcryptjs"
 
 const prisma = new PrismaClient()
 
-// Extend the session type to include user data
 declare module "next-auth" {
   interface Session {
     user: {
@@ -26,18 +26,33 @@ declare module "next-auth" {
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
     Credentials({
-      name: "credentials",
+      id: 'credentials',
+      name: "Credentials",
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
-        // Add your authorization logic here
+      
+        if (!credentials?.email || !credentials?.password) {
+          return null
+        }
+
         const user = await prisma.adminUser.findUnique({
           where: { email: credentials.email as string }
         })
 
-        if (!user || user.password !== credentials.password) {
+        if (!user) {
+          return null
+        }
+
+     
+        const passwordsMatch = await bcrypt.compare(
+          credentials.password as string,
+          user.password
+        )
+
+        if (!passwordsMatch) {
           return null
         }
 
@@ -52,7 +67,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   ],
   callbacks: {
     async session({ session, token }) {
-      // Send properties to the client, like user id and role
+    
       if (token && session) {
         session.user.id = token.id as string
         session.user.email = token.email as string
@@ -62,7 +77,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return session
     },
     async jwt({ token, user }) {
-      // Persist additional data to the token, like user id and role
+      
       if (user) {
         token.id = user.id
         token.email = user.email
@@ -74,5 +89,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   },
   session: {
     strategy: "jwt",
+  },
+  pages: {
+    signIn: '/auth/signin',
   },
 })

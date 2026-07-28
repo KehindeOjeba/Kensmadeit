@@ -22,10 +22,10 @@ model AdminUser {
   role      String   @default("admin")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+
   accounts Account[]
   sessions Session[]
-  
+
   @@map("admin_users")
 }
 
@@ -39,86 +39,100 @@ model Category {
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  
+
   products Product[]
-  
+
   @@map("categories")
 }
 
 // Product model
 model Product {
-  id          String   @id @default(cuid())
-  name        String
-  slug        String   @unique
-  description String?
-  price       Decimal
+  id           String   @id @default(cuid())
+  name         String
+  slug         String   @unique
+  description  String?
+  price        Decimal
   comparePrice Decimal?
-  sku         String   @unique
-  trackStock  Boolean  @default(true)
-  stock       Int      @default(0)
-  images      String[] // Array of image URLs
-  tags        String[]
-  isActive    Boolean  @default(true)
-  categoryId  String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
-  category     Category     @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  orderItems   OrderItem[]
-  reviews      Review[]
-  
+  sku          String   @unique
+  trackStock   Boolean  @default(true)
+  stock        Int      @default(0)
+
+  images String[]
+  tags   String[]
+
+  sizes  String[] @default([])
+  colors String[] @default([])
+
+  isActive Boolean @default(true)
+
+  categoryId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  category   Category    @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  orderItems OrderItem[]
+  reviews    Review[]
+
   @@map("products")
 }
 
 // Order model for guest checkout
 model Order {
-  id              String    @id @default(cuid())
-  orderNumber     String    @unique
-  customerName    String
-  customerEmail   String
-  customerPhone   String
-  shippingAddress Json      // Store address as JSON
-  totalAmount     Decimal
+  id               String   @id @default(cuid())
+  orderNumber      String   @unique
+  customerName     String
+  customerEmail    String
+  customerPhone    String
+  shippingAddress  Json // Store address as JSON
+  totalAmount      Decimal
   paymentReference String?
-  paymentStatus   String    @default("pending") // pending, paid, failed, refunded
-  orderStatus     String    @default("pending") // pending, processing, shipped, delivered, cancelled
-  customerId      String?   // Optional for post-checkout account creation
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  
+  paymentStatus    String   @default("pending") // pending, paid, failed, refunded
+  orderStatus      String   @default("pending") // pending, processing, shipped, delivered, cancelled
+  customerId       String? // Optional for post-checkout account creation
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
   orderItems OrderItem[]
-  
+
   @@map("orders")
 }
 
 // Order items (products in an order)
 model OrderItem {
-  id        String  @id @default(cuid())
+  id String @id @default(cuid())
+
   orderId   String
   productId String
-  quantity  Int
-  price     Decimal // Price at time of purchase
-  
-  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  quantity Int     @default(1)
+  price    Decimal
+
+  size  String?
+  color String?
+
+  createdAt DateTime @default(now())
+
   product Product @relation(fields: [productId], references: [id])
-  
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
   @@map("order_items")
 }
 
 // Product reviews
 model Review {
-  id        String   @id @default(cuid())
-  productId String
-  name      String
-  email     String
-  rating    Int      // 1-5 stars
-  comment   String?
-  isApproved Boolean @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
+  id         String   @id @default(cuid())
+  productId  String
+  name       String
+  email      String
+  rating     Int // 1-5 stars
+  comment    String?
+  isApproved Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-  
+
   @@map("reviews")
 }
 
@@ -130,7 +144,7 @@ model Cart {
   expiresAt DateTime
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+
   @@map("carts")
 }
 
@@ -156,8 +170,8 @@ model Account {
 }
 
 model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique
+  id           String    @id @default(cuid())
+  sessionToken String    @unique
   userId       String
   expires      DateTime
   user         AdminUser @relation(fields: [userId], references: [id], onDelete: Cascade)

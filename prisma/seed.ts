@@ -2,7 +2,7 @@ import { config } from 'dotenv'
 import { PrismaClient } from '@prisma/client'
 import bcrypt from 'bcryptjs'
 
-// Load environment variables
+
 config({ path: '.env' })
 
 const prisma = new PrismaClient()
@@ -10,7 +10,7 @@ const prisma = new PrismaClient()
 async function main() {
   console.log('seed')
 
-  // Create admin user
+  
   const hashedPassword = await bcrypt.hash('admin123', 12)
   const adminUser = await prisma.adminUser.upsert({
     where: { email: 'admin@kensmadeit.com' },
@@ -25,7 +25,7 @@ async function main() {
 
   console.log('created', adminUser.email)
 
-  // Create categories
+ 
   const categories = [
     {
       name: 'Handmade Shoes',
@@ -58,9 +58,8 @@ async function main() {
     console.log(`Category  ${category.name}`)
   }
 
-  // Create products
   const products = [
-    // Handmade Shoes
+   
     {
       name: 'Classic Leather Handmade Shoes',
       slug: 'classic-leather-handmade-shoes',
@@ -71,6 +70,7 @@ async function main() {
       stock: 10,
       images: ['/images/kshoe1.jpeg', '/images/kshoe2.jpeg'],
       tags: ['handmade', 'leather', 'formal', 'classic'],
+      sizes: ['39','40','41','42','43','44','45','46'],
       categoryId: createdCategories[0].id,
     },
     {
@@ -83,9 +83,10 @@ async function main() {
       stock: 15,
       images: ['/images/kshoe3.jpeg', '/images/IMG_9160.jpg'],
       tags: ['handmade', 'canvas', 'casual', 'comfortable'],
+      sizes: ['39','40','41','42','43','44','45','46'],
       categoryId: createdCategories[0].id,
     },
-    // Handmade Slippers
+    
     {
       name: 'Premium Leather Slippers',
       slug: 'premium-leather-slippers',
@@ -96,6 +97,7 @@ async function main() {
       stock: 20,
       images: ['/images/slippers1.jpeg', '/images/slippers2.jpeg'],
       tags: ['handmade', 'leather', 'slippers', 'premium'],
+      sizes: ['39','40','41','42','43','44','45','46'],
       categoryId: createdCategories[1].id,
     },
     {
@@ -108,9 +110,10 @@ async function main() {
       stock: 25,
       images: ['/images/slippers3.jpeg', '/images/slippers4.jpeg'],
       tags: ['handmade', 'fabric', 'slippers', 'comfort'],
+      sizes: ['39','40','41','42','43','44','45','46'],
       categoryId: createdCategories[1].id,
     },
-    // Ready Made Shoes
+  
     {
       name: 'Sports Running Shoes',
       slug: 'sports-running-shoes',
@@ -121,6 +124,7 @@ async function main() {
       stock: 30,
       images: ['/images/shoe1.jpg', '/images/shoe2.jpg'],
       tags: ['sports', 'running', 'athletic', 'performance'],
+      sizes: ['39','40','41','42','43','44','45','46'],
       categoryId: createdCategories[2].id,
     },
     {
@@ -133,6 +137,7 @@ async function main() {
       stock: 18,
       images: ['/images/shoe3.jpg', '/images/IMG_7194.jpg'],
       tags: ['urban', 'street', 'casual', 'stylish'],
+      sizes: ['39','40','41','42','43','44','45','46'],
       categoryId: createdCategories[2].id,
     },
   ]

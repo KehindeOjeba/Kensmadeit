@@ -84,7 +84,7 @@ export default function BannerCarousel() {
         </div>
       ))}
 
-      {/* Navigation Buttons */}
+      
       <Button
         variant="ghost"
         size="icon"
@@ -102,7 +102,7 @@ export default function BannerCarousel() {
         <ChevronRight className="h-6 w-6" />
       </Button>
 
-      {/* Indicators */}
+      
       <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2">
         {banners.map((_, index) => (
           <button
