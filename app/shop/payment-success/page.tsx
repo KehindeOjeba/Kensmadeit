@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { useCart } from '@/lib/store/cartStore'
@@ -18,7 +18,7 @@ interface OrderData {
   createdAt: string
 }
 
-export default function PaymentSuccessPage() {
+function PaymentSuccessPageContent()  {
   const searchParams = useSearchParams()
   const router = useRouter()
   const [order, setOrder] = useState<OrderData | null>(null)
@@ -219,5 +219,18 @@ export default function PaymentSuccessPage() {
         </div>
       </div>
     </div>
+  )
+}
+export default function PaymentSuccessPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center">
+          Loading...
+        </div>
+      }
+    >
+      <PaymentSuccessPageContent />
+    </Suspense>
   )
 }
