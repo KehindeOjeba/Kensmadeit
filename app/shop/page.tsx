@@ -138,6 +138,7 @@ export default function ShopPage() {
       images: product.images,
       quantity: 1,
       slug: product.slug,
+       productId: product.id,
     })
 
     setAddedProductIds((prev) => [...prev, product.id])
