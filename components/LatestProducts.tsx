@@ -1,8 +1,7 @@
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import ProductCard from "./ProductCard"
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import ProductCard from "./ProductCard";
 
-// Mock data - replace with actual data from your database
 const latestProducts = [
   {
     id: "1",
