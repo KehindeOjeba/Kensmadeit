@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { Suspense, useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -33,7 +33,7 @@ interface Category {
   _count?: { products: number }
 }
 
-export default function ShopPage() {
+function ShopPageContent()  {
   const searchParams = useSearchParams()
   const [products, setProducts] = useState<Product[]>([])
   const [categories, setCategories] = useState<Category[]>([])
@@ -396,5 +396,19 @@ export default function ShopPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function ShopPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-orange-900 via-gray-900 to-orange-900">
+          <div className="text-white text-lg">Loading...</div>
+        </div>
+      }
+    >
+      <ShopPageContent />
+    </Suspense>
   )
 }
