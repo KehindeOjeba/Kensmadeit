@@ -5,18 +5,21 @@ import Logo from "@/public/kensmadeitlogo.png";
 
 interface LogoCircleProps {
   isHovered: boolean;
-  onMouseEnter: () => void;
+  onInteract: () => void;
 }
 
-export default function LogoCircle({ isHovered, onMouseEnter }: LogoCircleProps) {
+export default function LogoCircle({ isHovered, onInteract }: LogoCircleProps) {
   return (
     <div
       className={`
-        relative w-[200px] h-[200px] flex items-center justify-center cursor-pointer
+        relative z-10 w-[200px] h-[200px] flex items-center justify-center cursor-pointer
         transition-all duration-500 ease-out
         ${isHovered ? "scale-0 opacity-0 pointer-events-none" : "scale-100 opacity-100"}
       `}
-      onMouseEnter={onMouseEnter}
+      onMouseEnter={onInteract}
+      onPointerDown={onInteract}
+      onTouchStart={onInteract}
+      onClick={onInteract}
     >
     
       <div className="absolute inset-0 rounded-full border-2 border-orange-500/30 animate-glow-pulse" />
@@ -40,8 +43,11 @@ export default function LogoCircle({ isHovered, onMouseEnter }: LogoCircleProps)
       </div>
 
     
-      <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 whitespace-nowrap">
-        <span className="text-orange-500/60 text-sm tracking-wider uppercase">
+      <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 whitespace-nowrap text-center">
+        <span className="text-orange-500/60 text-sm tracking-wider uppercase sm:hidden">
+          Tap to explore
+        </span>
+        <span className="hidden text-orange-500/60 text-sm tracking-wider uppercase sm:block">
           Hover to explore
         </span>
       </div>

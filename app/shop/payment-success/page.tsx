@@ -212,8 +212,8 @@ function PaymentSuccessPageContent()  {
         <div className="mt-8 text-center text-slate-600">
           <p>
             Have questions? Contact us at{' '}
-            <a href="mailto:support@kensmadeit.com" className="text-blue-600 hover:underline">
-              support@kensmadeit.com
+            <a href="mailto:kensmadeit13@gmail.com" className="text-blue-600 hover:underline">
+              kensmadeit13@gmail.com
             </a>
           </p>
         </div>

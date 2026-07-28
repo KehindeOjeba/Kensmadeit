@@ -131,3 +131,19 @@
     @apply cursor-pointer;
   }
 }
+
+.hero-card-mobile-reveal {
+  clip-path: circle(0% at 50% 50%);
+  transition: clip-path 650ms cubic-bezier(0.22, 1, 0.36, 1), opacity 650ms cubic-bezier(0.22, 1, 0.36, 1), transform 650ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.hero-card-mobile-reveal.hero-card-open {
+  clip-path: circle(150% at 50% 50%);
+}
+
+@media (min-width: 768px) {
+  .hero-card-mobile-reveal {
+    clip-path: none;
+    transition: opacity 500ms ease-out, transform 500ms ease-out;
+  }
+}
