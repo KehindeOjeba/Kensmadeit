@@ -10,6 +10,7 @@ import { ChevronDown, ShoppingCart, Star } from 'lucide-react'
 import { useCart } from '@/lib/store/cartStore'
 import ProductCard from '@/components/ProductCard'
 import AnimatedCart from '@/components/home/AnimatedCart'
+import { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetClose } from '@/components/ui/sheet'
 
 interface Product {
   id: string
@@ -162,7 +163,7 @@ function ShopPageContent()  {
           </div>
 
           <form onSubmit={handleSearch} className="mb-4">
-            <div className="flex gap-2">
+            <div className="flex flex-col gap-3 sm:flex-row">
               <Input
                 type="text"
                 placeholder="Search products..."
@@ -170,11 +171,84 @@ function ShopPageContent()  {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="flex-1 text-white"
               />
-              <Button type="submit" className="cursor-pointer border-amber-50">
+              <Button type="submit" className="w-full sm:w-auto cursor-pointer border-amber-50">
                 Search
               </Button>
             </div>
           </form>
+          {selectedCategory && (
+            <div className="mb-4 flex flex-wrap items-center gap-2">
+              <span className="inline-flex items-center rounded-full bg-orange-100 px-3 py-1 text-sm font-medium text-orange-700">
+                Filter: {categories.find((category) => category.slug === selectedCategory)?.name || 'Selected'}
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setSelectedCategory(null)}
+                className="h-8"
+              >
+                Clear filter
+              </Button>
+            </div>
+          )}
+          <div className="mb-4 lg:hidden">
+            <Sheet>
+              <div className="flex items-center gap-2">
+                <SheetTrigger asChild>
+                  <Button variant="outline" className="w-full justify-between">
+                    Categories
+                    <ChevronDown className="h-4 w-4" />
+                  </Button>
+                </SheetTrigger>
+              </div>
+              <SheetContent side="left" className="pb-8">
+                <SheetHeader>
+                  <SheetTitle>Categories</SheetTitle>
+                  <SheetDescription>Tap a category to filter products.</SheetDescription>
+                </SheetHeader>
+                <div className="space-y-2 mt-4">
+                  <SheetClose asChild>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedCategory(null)}
+                      className={`w-full text-left px-4 py-3 rounded-md border transition ${
+                        !selectedCategory
+                          ? 'bg-orange-50 border-orange-200 text-orange-700'
+                          : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
+                      }`}
+                    >
+                      All Products
+                    </button>
+                  </SheetClose>
+                  {categories.map((category) => (
+                    <SheetClose asChild key={category.id}>
+                      <button
+                        type="button"
+                        onClick={() => setSelectedCategory(category.slug)}
+                        className={`w-full text-left px-4 py-3 rounded-md border transition ${
+                          selectedCategory === category.slug
+                            ? 'bg-orange-50 border-orange-200 text-orange-700'
+                            : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
+                        }`}
+                      >
+                        {category.name}
+                        <span className="text-sm text-slate-500 float-right">
+                          ({category._count?.products || 0})
+                        </span>
+                      </button>
+                    </SheetClose>
+                  ))}
+                </div>
+                <div className="mt-6">
+                  <SheetClose asChild>
+                    <Button variant="outline" className="w-full">
+                      Close
+                    </Button>
+                  </SheetClose>
+                </div>
+              </SheetContent>
+            </Sheet>
+          </div>
         </div>
       </div>
 
@@ -281,9 +355,8 @@ function ShopPageContent()  {
                     <div
                       key={product.id}
                       data-testid="product-card"
-                      className="bg-white rounded-lg shadow-sm hover:shadow-lg transition overflow-hidden group"
+                      className="bg-white rounded-lg shadow-sm transition-transform duration-200 ease-out hover:shadow-lg active:scale-[0.98] active:shadow-lg overflow-hidden group"
                     >
-                     
                       <Link href={`/shop/product/${product.slug}`}>
                         <div className="relative h-48 bg-slate-100 overflow-hidden">
                           <Image
@@ -295,23 +368,19 @@ function ShopPageContent()  {
                         </div>
                       </Link>
 
-                    
                       <div className="p-4">
-                     
                         <div className="mb-2">
                           <span className="inline-block bg-orange-100 text-orange-700 text-xs font-medium px-2.5 py-0.5 rounded">
                             {product.category?.name}
                           </span>
                         </div>
 
-                       
                         <Link href={`/shop/product/${product.slug}`}>
                           <h3 className="text-sm font-semibold text-slate-900 hover:text-orange-600 line-clamp-2 mb-2">
                             {product.name}
                           </h3>
                         </Link>
 
-                       
                         <div className="flex items-center gap-1 mb-3">
                           <div className="flex gap-0.5">
                             {[...Array(5)].map((_, i) => (
@@ -331,7 +400,6 @@ function ShopPageContent()  {
                           </span>
                         </div>
 
-                        
                         <div className="flex items-center gap-2 mb-4">
                           <span className="text-lg font-bold text-slate-900" data-testid="product-price">
                             ₦{parseFloat(String(product.price)).toLocaleString('en-NG', {
@@ -347,7 +415,6 @@ function ShopPageContent()  {
                           )}
                         </div>
 
-                      
                         {product.stock > 0 ? (
                           <p className="text-xs text-green-600 font-medium mb-3">
                             In Stock ({product.stock} available)
@@ -358,7 +425,6 @@ function ShopPageContent()  {
                           </p>
                         )}
 
-                       
                         <Button
                           onClick={() => handleAddToCart(product)}
                           disabled={product.stock === 0}
@@ -372,8 +438,9 @@ function ShopPageContent()  {
                   ))}
                 </div>
 
-               
-              
+                <div className="mb-2 text-sm text-slate-500">
+                  Tap a product card to view details or use Add to Cart for a quick purchase.
+                </div>
               </>
             )}
 

@@ -425,9 +425,6 @@ const handleEdit = (product: Product) => {
   <label className="text-sm font-medium">
     Upload Product Images
   </label>
-  <p className="text-xs text-slate-500">
-    If you want the product image to change when a color is selected, upload color-specific images in the same order as the colors below and/or include the color name in the filename.
-  </p>
 
   <input
     type="file"
