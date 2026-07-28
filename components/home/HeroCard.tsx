@@ -24,27 +24,33 @@ export default function HeroCard({
   const handleShopClick = () => {
     router.push('/shop');
   };
+
+  const imageWrapperClasses = [
+    'absolute sm:relative top-1/2 sm:top-auto left-1/2 sm:left-auto -translate-x-1/2 sm:-translate-x-0 -translate-y-1/2 sm:translate-y-0',
+    'transition-opacity duration-[650ms] ease-[cubic-bezier(0.22,1,0.36,1)]',
+    isHovered ? 'opacity-100' : 'opacity-0',
+    !isHovered ? 'sm:translate-x-[100px]' : '',
+  ].join(' ');
+
   return (
     <div
-      className={`
-        absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
-        overflow-hidden cursor-default
-        transition-all duration-500 ease-out
+      className={
+        `hero-card-mobile-reveal ${isHovered ? "hero-card-open" : ""} z-20 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 overflow-hidden cursor-default transform origin-center
+        transition-[opacity,transform] duration-650 ease-[cubic-bezier(0.22,1,0.36,1)]
         ${
           isHovered
-            ? "w-[320px] sm:w-[500px] md:w-[600px] h-[400px] sm:h-[350px] rounded-3xl opacity-100 scale-100"
-            : "w-[200px] h-[200px] rounded-full opacity-0 scale-90 pointer-events-none"
-        }
-      `}
+            ? 'w-[320px] h-[320px] sm:w-[500px] md:w-[600px] sm:h-[350px] rounded-none sm:rounded-3xl opacity-100 scale-100 pointer-events-auto'
+            : 'w-[200px] h-[200px] rounded-full opacity-0 scale-75 pointer-events-none'
+        }`
+      }
       style={{
         background:
-          "linear-gradient(135deg, rgba(20, 20, 20, 0.95) 0%, rgba(10, 10, 10, 0.98) 100%)",
+          'linear-gradient(135deg, rgba(20, 20, 20, 0.95) 0%, rgba(10, 10, 10, 0.98) 100%)',
         boxShadow:
-          "0 0 40px rgba(249, 115, 22, 0.3), 0 0 80px rgba(249, 115, 22, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.1)",
+          '0 0 40px rgba(249, 115, 22, 0.3), 0 0 80px rgba(249, 115, 22, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
       }}
       onMouseLeave={onMouseLeave}
     >
-   
       <div className="absolute inset-0 rounded-3xl border border-orange-500/30" />
 
    
@@ -59,7 +65,7 @@ export default function HeroCard({
             `}
             style={{
               textShadow: "0 0 30px rgba(249, 115, 22, 0.5)",
-              transitionDelay: isHovered ? "100ms" : "0ms",
+              transitionDelay: isHovered ? "50ms" : "0ms",
             }}
           >
             <span className="text-orange-500">KENS</span>MADEIT
@@ -71,7 +77,7 @@ export default function HeroCard({
               transition-all duration-500
               ${isHovered ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"}
             `}
-            style={{ transitionDelay: isHovered ? "200ms" : "0ms" }}
+            style={{ transitionDelay: isHovered ? "100ms" : "0ms" }}
           >
             Handcrafted with precision. Our premium leather shoes blend timeless
             elegance with modern comfort. Each pair tells a story of artisan
@@ -85,7 +91,7 @@ export default function HeroCard({
               hover:shadow-glow-lg hover:scale-105 active:scale-95
               ${isHovered ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"}
             `}
-            style={{ transitionDelay: isHovered ? "300ms" : "0ms" }}
+            style={{ transitionDelay: isHovered ? "150ms" : "0ms" }}
             onMouseEnter={onButtonEnter}
             onMouseLeave={onButtonLeave}
             onClick={handleShopClick}
@@ -101,18 +107,7 @@ export default function HeroCard({
         </div>
 
        
-        <div
-          className={`
-            absolute sm:relative right-0 top-1/2 sm:top-auto -translate-y-1/2 sm:translate-y-0
-            transition-all duration-700 ease-out
-            ${
-              isHovered
-                ? "translate-x-0 sm:translate-x-0 opacity-100"
-                : "translate-x-[100px] sm:translate-x-[100px] opacity-0"
-            }
-          `}
-          style={{ transitionDelay: isHovered ? "150ms" : "0ms" }}
-        >
+        <div className={imageWrapperClasses} style={{ transitionDelay: isHovered ? '150ms' : '0ms' }}>
           <Image
             src="/hero-shoe.png"
             alt="Handmade Leather Shoe"

@@ -36,7 +36,7 @@ export default function HomePage() {
       <div className="relative z-10 flex items-center justify-center">
         <LogoCircle
           isHovered={isHovered}
-          onMouseEnter={() => setIsHovered(true)}
+          onInteract={() => setIsHovered(true)}
         />
 
         <HeroCard
