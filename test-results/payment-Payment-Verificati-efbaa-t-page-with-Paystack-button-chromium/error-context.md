@@ -6,8 +6,8 @@
 
 # Test info
 
-- Name: payment.spec.ts >> Payment Verification >> should display order amount correctly
-- Location: e2e\payment.spec.ts:86:7
+- Name: payment.spec.ts >> Payment Verification >> should show payment page with Paystack button
+- Location: e2e\payment.spec.ts:59:7
 
 # Error details
 
@@ -128,7 +128,8 @@ Call log:
   59  |   test('should show payment page with Paystack button', async ({ page }) => {
   60  |     // Navigate to shop
   61  |     await page.goto('/shop')
-  62  |     await page.waitForSelector('[data-testid="product-card"]', { timeout: 10000 })
+> 62  |     await page.waitForSelector('[data-testid="product-card"]', { timeout: 10000 })
+      |                ^ Error: page.waitForSelector: Test timeout of 30000ms exceeded.
   63  |     
   64  |     // Navigate to first product
   65  |     await navigateToFirstProduct(page)
@@ -155,8 +156,7 @@ Call log:
   86  |   test('should display order amount correctly', async ({ page }) => {
   87  |     // Navigate to shop
   88  |     await page.goto('/shop')
-> 89  |     await page.waitForSelector('[data-testid="product-card"]', { timeout: 10000 })
-      |                ^ Error: page.waitForSelector: Test timeout of 30000ms exceeded.
+  89  |     await page.waitForSelector('[data-testid="product-card"]', { timeout: 10000 })
   90  |     
   91  |     // Navigate to first product
   92  |     await navigateToFirstProduct(page)
@@ -230,31 +230,4 @@ Call log:
   160 |     const nextButton = page.locator('button:has-text("Continue"), button:has-text("Next")')
   161 |     await nextButton.click().catch(() => null)
   162 | 
-  163 |     // Get the pay button and check its state
-  164 |     const paystackButton = page.locator('button:has-text("Pay with Paystack")')
-  165 |     
-  166 |     // Verify button is visible
-  167 |     await expect(paystackButton).toBeVisible({ timeout: 5000 }).catch(() => null)
-  168 |   })
-  169 | 
-  170 |   test('should display payment error handling', async ({ page }) => {
-  171 |     // Navigate to payment success page with invalid reference
-  172 |     await page.goto('/shop/payment-success?reference=invalid&email=test@example.com', { waitUntil: 'networkidle' }).catch(() => null)
-  173 | 
-  174 |     // Wait for page to stabilize
-  175 |     await page.waitForTimeout(500)
-  176 | 
-  177 |     // Check if error is shown or page redirects
-  178 |     const currentUrl = page.url()
-  179 |     const errorElement = page.locator('text=/failed|error|verification/i')
-  180 |     const hasError = await errorElement.isVisible({ timeout: 2000 }).catch(() => false)
-  181 |     
-  182 |     // Should either show error or redirect away from payment-success
-  183 |     const isErrorPage = hasError || !currentUrl.includes('payment-success') || currentUrl.includes('cart')
-  184 |     expect(isErrorPage).toBeTruthy()
-  185 |   })
-  186 | 
-  187 |   test('should verify email is sent on successful payment', async ({ page }) => {
-  188 |     // Navigate to shop
-  189 |     await page.goto('/shop')
 ```

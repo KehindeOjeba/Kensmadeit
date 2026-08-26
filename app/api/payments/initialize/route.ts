@@ -3,6 +3,9 @@ import { prisma } from '@/lib/prisma'
 
 const PAYSTACK_API_KEY = process.env.PAYSTACK_SECRET_KEY
 const PAYSTACK_API_URL = 'https://api.paystack.co'
+const APP_URL = (process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000').replace(/\/$/, '')
+const CALLBACK_URL = `${APP_URL}/payment/callback`
+const CANCEL_URL = `${CALLBACK_URL}?status=cancelled`
 
 export async function POST(request: NextRequest) {
 	try {
@@ -35,6 +38,8 @@ export async function POST(request: NextRequest) {
 				email,
 				amount, // in kobo (smallest currency unit)
 				reference,
+				callback_url: CALLBACK_URL,
+				cancel_action: CANCEL_URL,
 				metadata: {
 					orderId,
 					orderNumber: order.orderNumber,

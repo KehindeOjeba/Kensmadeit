@@ -6,8 +6,8 @@
 
 # Test info
 
-- Name: payment.spec.ts >> Payment Verification >> should display order amount correctly
-- Location: e2e\payment.spec.ts:86:7
+- Name: payment.spec.ts >> Payment Verification >> should have correct payment reference format
+- Location: e2e\payment.spec.ts:112:7
 
 # Error details
 
@@ -16,81 +16,26 @@ Test timeout of 30000ms exceeded.
 ```
 
 ```
-Error: page.waitForSelector: Test timeout of 30000ms exceeded.
-Call log:
-  - waiting for locator('[data-testid="product-card"]') to be visible
-
+Error: page.goto: Target page, context or browser has been closed
 ```
 
 # Page snapshot
 
 ```yaml
 - generic [active] [ref=e1]:
-  - generic [ref=e2]:
-    - generic [ref=e4]:
-      - generic [ref=e5]:
-        - heading "Shop" [level=1] [ref=e6]
-        - button [ref=e7] [cursor=pointer]:
-          - img [ref=e8]
-      - generic [ref=e11]:
-        - textbox "Search products..." [ref=e12]
-        - button "Search" [ref=e13] [cursor=pointer]
-    - generic [ref=e15]:
-      - complementary [ref=e16]:
-        - generic [ref=e17]:
-          - heading "Categories" [level=3] [ref=e18]
-          - button "All Products" [ref=e20] [cursor=pointer]
-        - generic [ref=e21]:
-          - heading "Sort By" [level=3] [ref=e22]
-          - generic [ref=e23]:
-            - generic [ref=e24] [cursor=pointer]:
-              - radio "Newest" [checked] [ref=e25]
-              - generic [ref=e26]: Newest
-            - generic [ref=e27] [cursor=pointer]:
-              - 'radio "Price: Low to High" [ref=e28]'
-              - generic [ref=e29]: "Price: Low to High"
-            - generic [ref=e30] [cursor=pointer]:
-              - 'radio "Price: High to Low" [ref=e31]'
-              - generic [ref=e32]: "Price: High to Low"
-            - generic [ref=e33] [cursor=pointer]:
-              - 'radio "Name: A to Z" [ref=e34]'
-              - generic [ref=e35]: "Name: A to Z"
-            - generic [ref=e36] [cursor=pointer]:
-              - 'radio "Name: Z to A" [ref=e37]'
-              - generic [ref=e38]: "Name: Z to A"
-      - main [ref=e39]
-  - button "Open Next.js Dev Tools" [ref=e106] [cursor=pointer]:
-    - img [ref=e107]
-  - alert [ref=e110]
+  - button "Open Next.js Dev Tools" [ref=e38] [cursor=pointer]:
+    - generic [ref=e41]:
+      - text: Compiling
+      - generic [ref=e42]:
+        - generic [ref=e43]: .
+        - generic [ref=e44]: .
+        - generic [ref=e45]: .
+  - alert [ref=e46]
 ```
 
 # Test source
 
 ```ts
-  1   | import { test, expect } from '@playwright/test'
-  2   | 
-  3   | const navigateToFirstProduct = async (page) => {
-  4   |   const firstProduct = page.locator('[data-testid="product-card"]').first()
-  5   |   const productLink = firstProduct.locator('a').first()
-  6   |   const href = await productLink.getAttribute('href')
-  7   |   
-  8   |   if (href) {
-  9   |     await page.goto(href)
-  10  |   } else {
-  11  |     await firstProduct.click()
-  12  |     await page.waitForTimeout(500)
-  13  |   }
-  14  |   
-  15  |   // Wait for page to load with a more forgiving timeout
-  16  |   await page.waitForLoadState('networkidle', { timeout: 5000 }).catch(() => null)
-  17  | }
-  18  | 
-  19  | const fillCheckoutForm = async (page, data = {}) => {
-  20  |   const defaultData = {
-  21  |     name: 'Test User',
-  22  |     email: 'test@example.com',
-  23  |     phone: '+234801234567',
-  24  |     address: '123 Test St',
   25  |     city: 'Lagos',
   26  |     state: 'Lagos',
   27  |     postal: '100001',
@@ -155,8 +100,7 @@ Call log:
   86  |   test('should display order amount correctly', async ({ page }) => {
   87  |     // Navigate to shop
   88  |     await page.goto('/shop')
-> 89  |     await page.waitForSelector('[data-testid="product-card"]', { timeout: 10000 })
-      |                ^ Error: page.waitForSelector: Test timeout of 30000ms exceeded.
+  89  |     await page.waitForSelector('[data-testid="product-card"]', { timeout: 10000 })
   90  |     
   91  |     // Navigate to first product
   92  |     await navigateToFirstProduct(page)
@@ -192,7 +136,8 @@ Call log:
   122 |     await addToCartButton.click().catch(() => null)
   123 | 
   124 |     // Go to checkout
-  125 |     await page.goto('/shop/checkout')
+> 125 |     await page.goto('/shop/checkout')
+      |                ^ Error: page.goto: Target page, context or browser has been closed
   126 | 
   127 |     // Fill form
   128 |     await fillCheckoutForm(page)
@@ -257,4 +202,31 @@ Call log:
   187 |   test('should verify email is sent on successful payment', async ({ page }) => {
   188 |     // Navigate to shop
   189 |     await page.goto('/shop')
+  190 |     await page.waitForSelector('[data-testid="product-card"]', { timeout: 10000 })
+  191 |     
+  192 |     // Navigate to first product
+  193 |     await navigateToFirstProduct(page)
+  194 |     
+  195 |     // Add to cart
+  196 |     const addToCartButton = page.locator('button:has-text("Add to Cart")')
+  197 |     await addToCartButton.click().catch(() => null)
+  198 | 
+  199 |     // Go to checkout
+  200 |     await page.goto('/shop/checkout')
+  201 | 
+  202 |     const email = 'payment-test@example.com'
+  203 | 
+  204 |     // Fill form with test email
+  205 |     await fillCheckoutForm(page, { email })
+  206 | 
+  207 |     // Proceed to payment
+  208 |     const nextButton = page.locator('button:has-text("Continue"), button:has-text("Next")')
+  209 |     await nextButton.click().catch(() => null)
+  210 | 
+  211 |     // Verify email is shown in order details
+  212 |     const emailDisplay = page.locator(`text=${email}`)
+  213 |     await expect(emailDisplay).toBeVisible({ timeout: 5000 }).catch(() => null)
+  214 |   })
+  215 | })
+  216 | 
 ```
