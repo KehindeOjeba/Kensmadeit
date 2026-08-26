@@ -103,27 +103,79 @@ if (paystackAmount !== orderAmountKobo) {
 				return NextResponse.json({ error: 'Metadata orderNumber does not match' }, { status: 400 })
 			}
 
-			// 7. All validations passed — perform the update inside a transaction
-			const updatedOrder = await prisma.$transaction(async (tx) => {
-				if (order.paymentStatus === "paid") {
-		return order;
-	}
+			// 7. Only one request should win the paid transition, even if the webhook and callback race.
+			const txResult = await prisma.$transaction(async (tx) => {
+				const orderExists = await tx.order.findUnique({
+					where: { id: order.id },
+				})
 
-	return await tx.order.update({
-		where: { id: order.id },
-		data: {
-			paymentStatus: "paid",
-			orderStatus: "processing",
-		},
-	});
+				if (!orderExists) {
+					throw new Error('Order not found during payment verification')
+				}
+
+				const updatedResult = await tx.order.updateMany({
+					where: {
+						id: order.id,
+						paymentStatus: { not: 'paid' },
+					},
+					data: {
+						paymentStatus: 'paid',
+						orderStatus: 'processing',
+						paymentReference: reference,
+					},
+				})
+
+				if (updatedResult.count === 0) {
+					const currentOrder = await tx.order.findUnique({
+						where: { id: order.id },
+						include: {
+							orderItems: {
+								include: {
+									product: true,
+								},
+							},
+						},
+					})
+					return { order: currentOrder, updated: false }
+				}
+
+				const updatedOrder = await tx.order.findUnique({
+					where: { id: order.id },
+					include: {
+						orderItems: {
+							include: {
+								product: true,
+							},
+						},
+					},
+				})
+
+				return { order: updatedOrder, updated: true }
 			})
+
+			if (txResult.updated) {
+				for (const item of order.orderItems) {
+					if (item.product.trackStock) {
+						await prisma.product.update({
+							where: { id: item.productId },
+							data: {
+								stock: {
+									decrement: item.quantity,
+								},
+							},
+						})
+					}
+				}
+			}
+
+			const verifiedOrder = txResult.order ?? order
 
 			// 9. Return minimal success response
 			return NextResponse.json({
 				success: true,
-				orderId: updatedOrder.id,
-				orderNumber: updatedOrder.orderNumber,
-				paymentStatus: updatedOrder.paymentStatus,
+				orderId: verifiedOrder.id,
+				orderNumber: verifiedOrder.orderNumber,
+				paymentStatus: verifiedOrder.paymentStatus,
 			}, { status: 200 })
 		} catch (validationError) {
 			console.error('Payment validation/update error:', validationError)
