@@ -46,7 +46,7 @@ export default function AdminReviews() {
 
   useEffect(() => {
     filterReviews();
-  }, [reviews, filterStatus]);
+  }, [reviews, filterStatus, filteredReviews]);
 
   const fetchReviews = async () => {
     try {

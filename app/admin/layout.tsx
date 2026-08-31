@@ -107,7 +107,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                       : 'text-gray-300 hover:bg-gray-800 hover:text-white'
                   }`}
                 >
-                  <Icon className="h-5 w-5 flex-shrink-0" />
+                  <Icon className="h-5 w-5 shrink-0" />
                   <span>{item.label}</span>
                 </Link>
               );
@@ -122,7 +122,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               onClick={handleLogout}
               className="w-full justify-start text-gray-300 hover:text-white hover:bg-red-600 bg-gray-800 cursor-pointer text-sm"
             >
-              <LogOut className="h-5 w-5 mr-2 flex-shrink-0" />
+              <LogOut className="h-5 w-5 mr-2 shrink-0" />
               <span className="truncate">Sign Out</span>
             </Button>
           </div>
