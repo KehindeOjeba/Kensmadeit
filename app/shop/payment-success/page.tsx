@@ -134,7 +134,7 @@ function PaymentSuccessPageContent()  {
 
      
           <div className="p-8">
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8">
+            <div className="bg-blue-50 border border-orange-200 rounded-lg p-6 mb-8">
               <h2 className="font-semibold text-slate-900 mb-4">
                 Order Confirmation
               </h2>

@@ -364,6 +364,9 @@ export default function AdminDashboard() {
             <CardContent className="text-gray-600">
               View and update order statuses
             </CardContent>
+            <CardContent className="text-gray-600">
+              View and update order statuses
+            </CardContent>
           </Card>
         </Link>
 

@@ -176,7 +176,7 @@ export default function CheckoutPage() {
             <Link href="/shop/cart">
               <Button variant="ghost" className="gap-2">
                 <ChevronLeft size={18} />
-                Back to Cart
+                Go Back to Cart
               </Button>
             </Link>
           </div>
@@ -224,7 +224,7 @@ export default function CheckoutPage() {
                       </label>
                       <Input
                         type="text"
-                        placeholder="Kenny Ojeba"
+                        placeholder="Kenny Ajayi"
                         value={formData.customerName}
                         onChange={(e) =>
                           handleInputChange('customerName', e.target.value)
