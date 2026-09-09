@@ -190,8 +190,8 @@ export default function CartPage() {
                   <span className="text-green-600">Free</span>
                 </div>
                 <div className="flex justify-between text-slate-600">
-                  <span>Tax (VAT)</span>
-                  <span>Calculated at checkout</span>
+                  {/* <span>Tax (VAT)</span>
+                  <span>Calculated at checkout</span> */}
                 </div>
               </div>
 
@@ -229,7 +229,12 @@ export default function CartPage() {
               </Button>
 
            
-              <div className="mt-6 p-4 bg-orange-50 rounded-lg">
+              <div className="mt-4 p-4 bg-orange-50 rounded-lg">
+                <p className="text-xs text-black">
+                  Note: Production and delivery takes 10 working days.
+                </p>
+              </div>
+              <div className="mt-2 p-4 bg-orange-50 rounded-lg">
                 <p className="text-xs text-orange-700">
                   You can review your order before making payment during
                   checkout.
