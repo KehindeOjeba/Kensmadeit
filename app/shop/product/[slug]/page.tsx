@@ -439,7 +439,7 @@ export default function ProductPage() {
           </div>
         </div>
 
-        
+{/*         
         <div className="bg-white rounded-lg shadow-sm p-6 md:p-10 mb-8">
           <h2 className="text-2xl font-bold text-slate-900 mb-4">
             Customer Reviews
@@ -482,7 +482,7 @@ export default function ProductPage() {
               No reviews yet. Reviews can be submitted after delivery.
             </p>
           )}
-        </div>
+        </div> */}
 
       
         {product.relatedProducts && product.relatedProducts.length > 0 && (

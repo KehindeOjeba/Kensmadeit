@@ -79,8 +79,9 @@ export default function HeroCard({
             `}
             style={{ transitionDelay: isHovered ? "100ms" : "0ms" }}
           >
-            Handcrafted with precision. Our premium leather shoes blend timeless
-            elegance with modern comfort. Each pair tells a story of artisan
+            Good leather.
+             Clean design. <br/>Made to last. Find a pair that feels like you in our
+             premium leather footwear with modern comfort. Each pair tells a story of
             craftsmanship.
           </p>
 

@@ -6,6 +6,9 @@ import Link from 'next/link'
 import { AlertCircle, CheckCircle2, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useCart } from '@/lib/store/cartStore'
+import Lottie from 'lottie-react';
+import cartAnimation from "@/assets/cart-animation.json";
+
 
 type CallbackState = 'loading' | 'success' | 'failed' | 'cancelled'
 
@@ -22,13 +25,13 @@ function PaymentCallbackContent() {
 
     if (paymentStatus === 'cancelled') {
       setState('cancelled')
-      setMessage('Your payment could not be completed. Please try again.')
+      setMessage('Your payment could not be completed😞. Please try again.')
       return
     }
 
     if (!reference) {
       setState('failed')
-      setMessage('Your payment could not be completed or verified. Please try again.')
+      setMessage('Your payment could not be completed or verified😞. Please try again.')
       return
     }
 
@@ -56,7 +59,7 @@ function PaymentCallbackContent() {
         setOrderNumber(data.orderNumber ?? null)
         clearCart()
         setState('success')
-        setMessage('Your payment has been successfully received.')
+        setMessage('Yayyy!🥳Your order is on the way.💃')
       } catch {
         if (!isMounted) return
         setState('failed')
@@ -91,26 +94,30 @@ function PaymentCallbackContent() {
 
   if (state === 'success') {
     return (
-      <div className="min-h-screen bg-slate-50 px-4 py-12">
+      <div className="min-h-screen bg-slate-50 px-4 py-2">
         <div className="mx-auto max-w-md overflow-hidden rounded-2xl bg-white shadow-lg ring-1 ring-slate-200">
-          <div className="bg-gradient-to-r from-orange-500 to-orange-600 p-8 text-center text-white">
+          <div className="bg-black p-8 text-center text-white">
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
               <CheckCircle2 className="h-8 w-8" />
             </div>
             <h1 className="text-3xl font-bold">Payment Successful</h1>
             <p className="mt-2 text-sm text-emerald-100">{message}</p>
+             <Lottie
+            animationData={cartAnimation}
+            className="h-30 w-40 mx-auto mt-4"
+          />
           </div>
 
-          <div className="space-y-5 p-6 sm:p-8">
+          <div className="space-y-2 p-4 sm:p-8">
             {orderNumber && (
-              <div className="rounded-xl bg-yellow-50 p-4 ring-1 ring-slate-200">
-                <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Order Number</p>
+              <div className="rounded-xl bg-orange-500 p-4 ring-1 ring-slate-200">
+                <p className="text-xs font-medium uppercase tracking-wide text-slate-600">Order Number</p>
                 <p className="mt-2 text-lg font-semibold text-slate-900">{orderNumber}</p>
               </div>
             )}
 
             <p className="text-sm leading-6 text-slate-600">
-              Thank you for shopping with us. Your payment has been confirmed and your order is now being processed.
+              Thank you for shopping with us❤️<br/> Please come back soon.
             </p>
 
             <Link href="/" className="block">
@@ -134,7 +141,7 @@ function PaymentCallbackContent() {
           <h1 className="text-3xl font-bold text-slate-900">{title}</h1>
           <p className="mt-3 text-sm leading-6 text-slate-600">{message}</p>
           <Link href="/" className="mt-6 block w-full">
-            <Button className="h-12 w-full text-base font-medium">Return to Home</Button>
+            <Button className="h-12 w-full text-base font-medium">Returns to Home</Button>
           </Link>
         </div>
       </div>

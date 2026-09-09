@@ -224,7 +224,7 @@ export default function CheckoutPage() {
                       </label>
                       <Input
                         type="text"
-                        placeholder="Kenny Ajayi"
+                        placeholder="Enter your full name"
                         value={formData.customerName}
                         onChange={(e) =>
                           handleInputChange('customerName', e.target.value)
@@ -240,7 +240,7 @@ export default function CheckoutPage() {
                         </label>
                         <Input
                           type="email"
-                          placeholder="kennyoj@example.com"
+                          placeholder="Enter your email address"
                           value={formData.customerEmail}
                           onChange={(e) =>
                             handleInputChange('customerEmail', e.target.value)
@@ -255,7 +255,7 @@ export default function CheckoutPage() {
                         </label>
                         <Input
                           type="tel"
-                          placeholder="+234 ********"
+                          placeholder="Enter your phone number"
                           value={formData.customerPhone}
                           onChange={(e) =>
                             handleInputChange('customerPhone', e.target.value)
@@ -279,7 +279,7 @@ export default function CheckoutPage() {
                         </label>
                         <Input
                           type="text"
-                          placeholder="145 Ochird Street"
+                          placeholder="Enter your street address"
                           value={formData.shippingAddress.address}
                           onChange={(e) =>
                             handleAddressChange('address', e.target.value)
@@ -295,7 +295,7 @@ export default function CheckoutPage() {
                           </label>
                           <Input
                             type="text"
-                            placeholder="Lagos"
+                            placeholder="Enter your city"
                             value={formData.shippingAddress.city}
                             onChange={(e) =>
                               handleAddressChange('city', e.target.value)
@@ -306,11 +306,11 @@ export default function CheckoutPage() {
 
                         <div>
                           <label className="block text-sm font-medium text-slate-900 mb-2">
-                            State/Province *
+                            State *
                           </label>
                           <Input
                             type="text"
-                            placeholder="Lagos"
+                            placeholder="Enter your state"
                             value={formData.shippingAddress.state}
                             onChange={(e) =>
                               handleAddressChange('state', e.target.value)
@@ -339,7 +339,7 @@ export default function CheckoutPage() {
                           </label>
                           <Input
                             type="text"
-                            placeholder="100001"
+                            placeholder="Enter your postal code"
                             value={formData.shippingAddress.postalCode}
                             onChange={(e) =>
                               handleAddressChange('postalCode', e.target.value)
@@ -490,8 +490,8 @@ export default function CheckoutPage() {
                   <span className="text-green-600">Free</span>
                 </div>
                 <div className="flex justify-between text-slate-600">
-                  <span>Tax</span>
-                  <span>Calculated at payment</span>
+                  {/* <span>Tax</span>
+                  <span>Calculated at payment</span> */}
                 </div>
                 <div className="flex justify-between pt-3 border-t border-slate-200">
                   <span className="font-semibold text-slate-900">Total</span>
