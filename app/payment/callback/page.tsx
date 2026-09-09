@@ -100,14 +100,20 @@ function PaymentCallbackContent() {
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
               <CheckCircle2 className="h-8 w-8" />
             </div>
-            <h1 className="text-3xl font-bold">Payment Successful</h1>
+            <h1 className="text-3xl font-bold">Payment Successfully</h1>
             <p className="mt-2 text-sm text-emerald-100">{message}</p>
+            <div className="flex justify-center">
              <Lottie
             src={cartAnimation}
             autoplay
             loop
-            className="h-32 w-40 mx-auto mt-4"
+             style={{
+    width: "100px",
+    height: "100px",
+
+  }}
           />
+          </div>
           </div>
 
           <div className="space-y-2 p-4 sm:p-8">
