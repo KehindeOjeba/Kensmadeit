@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { AlertCircle, CheckCircle2, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useCart } from '@/lib/store/cartStore'
-import Lottie from 'lottie-react';
+import { Lottie } from 'lottie-react';
 import cartAnimation from "@/assets/cart-animation.json";
 
 
@@ -103,8 +103,10 @@ function PaymentCallbackContent() {
             <h1 className="text-3xl font-bold">Payment Successful</h1>
             <p className="mt-2 text-sm text-emerald-100">{message}</p>
              <Lottie
-            animationData={cartAnimation}
-            className="h-30 w-40 mx-auto mt-4"
+            src={cartAnimation}
+            autoplay
+            loop
+            className="h-32 w-40 mx-auto mt-4"
           />
           </div>
 
