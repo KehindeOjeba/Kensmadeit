@@ -57,27 +57,27 @@ function ShopPageContent()  {
   }, [searchParams])
 
   
-  useEffect(() => {
-    const fetchCategories = async () => {
-      let retries = 3
-      while (retries > 0) {
-        try {
-          const res = await fetch('/api/categories')
-          if (!res.ok) throw new Error(`Failed to fetch categories: ${res.status}`)
-          const data = await res.json()
-          setCategories(Array.isArray(data) ? data : [])
-          return
-        } catch (err) {
-          retries--
-          if (retries === 0) {
-            console.error('Failed to fetch categories after retries:', err)
-          } else {
-            await new Promise(resolve => setTimeout(resolve, 500))
-          }
+  const fetchCategories = async () => {
+    let retries = 3
+    while (retries > 0) {
+      try {
+        const res = await fetch('/api/categories', { cache: 'no-store' })
+        if (!res.ok) throw new Error(`Failed to fetch categories: ${res.status}`)
+        const data = await res.json()
+        setCategories(Array.isArray(data) ? data : [])
+        return
+      } catch (err) {
+        retries--
+        if (retries === 0) {
+          console.error('Failed to fetch categories after retries:', err)
+        } else {
+          await new Promise(resolve => setTimeout(resolve, 500))
         }
       }
     }
+  }
 
+  useEffect(() => {
     fetchCategories()
   }, [])
 
@@ -107,12 +107,13 @@ function ShopPageContent()  {
             params.append('search', searchQuery)
           }
 
-          const res = await fetch(`/api/products?${params}`)
+          const res = await fetch(`/api/products?${params}`, { cache: 'no-store' })
           if (!res.ok) throw new Error(`Failed to fetch products: ${res.status}`)
 
           const data = await res.json()
 
           setProducts(Array.isArray(data.products) ? data.products : [])
+          await fetchCategories()
           setError(null)
           success = true
         } catch (err) {
@@ -151,6 +152,13 @@ function ShopPageContent()  {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
   }
+
+  const categoryCounts = categories.reduce<Record<string, number>>((acc, category) => {
+    acc[category.id] = products.filter(
+      (product) => product.categoryId === category.id || product.category?.id === category.id,
+    ).length
+    return acc
+  }, {})
 
   return (
     <div className="min-h-screen bg-linear-to-br from-orange-900 via-gray-900 to-orange-900">
@@ -233,7 +241,7 @@ function ShopPageContent()  {
                       >
                         {category.name}
                         <span className="text-sm text-slate-500 float-right">
-                          ({category._count?.products || 0})
+                          ({categoryCounts[category.id] ?? category._count?.products ?? 0})
                         </span>
                       </button>
                     </SheetClose>
@@ -288,7 +296,7 @@ function ShopPageContent()  {
                   >
                     {category.name}
                     <span className="text-sm text-slate-500 ml-2">
-                      ({category._count?.products || 0})
+                      ({categoryCounts[category.id] ?? category._count?.products ?? 0})
                     </span>
                   </button>
                 ))}

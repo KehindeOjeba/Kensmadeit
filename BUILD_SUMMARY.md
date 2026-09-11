@@ -252,7 +252,7 @@ GET /api/reviews
 - ✅ Seed script with sample data:
   - 3 categories (Handmade Shoes, Handmade Slippers, Ready Made Shoes)
   - 6 products with images and details
-  - Admin user (email: admin@kensmadeit.com, password: admin123)
+ 
 
 ---
 
@@ -275,7 +275,7 @@ GET /api/reviews
 ```
 
 ### Test Credentials
-- Admin: admin@kensmadeit.com / admin123
+
 - Paystack Test Card: 4084 0842 7671 9399 (any CVV, future date)
 
 ---

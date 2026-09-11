@@ -49,6 +49,12 @@ interface Product {
   createdAt: string;
 }
 
+interface CategoryOption {
+  id: string;
+  name: string;
+  slug: string;
+}
+
 interface AdminProductFormData {
   name: string;
   sku: string;
@@ -57,7 +63,7 @@ interface AdminProductFormData {
   stock: string;
   description: string;
   categoryId: string;
-  images: string;
+  images: string[];
   tags: string;
   sizes: string;
   colors: string;
@@ -71,7 +77,7 @@ const initialFormData: AdminProductFormData = {
   stock: "",
   description: "",
   categoryId: "",
-  images: "",
+  images: [],
   tags: "",
   sizes: "39,40,41,42,43,44,45,46",
   colors: "Black,Brown,White,Blue,Red",
@@ -89,7 +95,75 @@ export default function AdminProducts() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteProductId, setDeleteProductId] = useState<string | null>(null);
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
+  const [categories, setCategories] = useState<CategoryOption[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [statusDialogOpen, setStatusDialogOpen] = useState(false);
+  const [statusDialog, setStatusDialog] = useState<{
+    type: "success" | "error";
+    title: string;
+    message: string;
+  }>({
+    type: "success",
+    title: "",
+    message: "",
+  });
+
+  const allowedImageTypes = [
+    "image/png",
+    "image/jpeg",
+    "image/jpg",
+    "image/heic",
+    "image/heif",
+  ];
+
+  const readFileAsDataUrl = (file: File) =>
+    new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result));
+      reader.onerror = () => reject(new Error(`Failed to read ${file.name}`));
+      reader.readAsDataURL(file);
+    });
+
+  const convertHeicToJpeg = async (file: File) => {
+    const fileType = file.type.toLowerCase();
+    const fileName = file.name.toLowerCase();
+    const isHeic =
+      fileType.includes("heic") ||
+      fileType.includes("heif") ||
+      fileName.endsWith(".heic") ||
+      fileName.endsWith(".heif");
+
+    if (!isHeic) {
+      return readFileAsDataUrl(file);
+    }
+
+    try {
+      const sourceUrl = await readFileAsDataUrl(file);
+      const image = await new Promise<HTMLImageElement>((resolve, reject) => {
+        const img = new window.Image();
+        img.onload = () => resolve(img);
+        img.onerror = () => reject(new Error("Could not decode HEIC image"));
+        img.src = sourceUrl;
+      });
+
+      const canvas = document.createElement("canvas");
+      canvas.width = image.naturalWidth || image.width;
+      canvas.height = image.naturalHeight || image.height;
+
+      const context = canvas.getContext("2d");
+      if (!context) {
+        return sourceUrl;
+      }
+
+      context.drawImage(image, 0, 0);
+      return canvas.toDataURL("image/jpeg", 0.92);
+    } catch {
+      return readFileAsDataUrl(file);
+    }
+  };
+
   useEffect(() => {
+    fetchCategories();
     fetchProducts();
   }, []);
 
@@ -97,11 +171,23 @@ export default function AdminProducts() {
     filterProducts();
   }, [products, searchTerm, stockFilter]);
 
+  const fetchCategories = async () => {
+    try {
+      const res = await fetch("/api/categories", { cache: "no-store" });
+      if (!res.ok) throw new Error("Failed to fetch categories");
+      const data = await res.json();
+      setCategories(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error("Error fetching categories:", err);
+      setCategories([]);
+    }
+  };
+
   const fetchProducts = async () => {
     try {
       setLoading(true);
       setError("");
-      const res = await fetch("/api/products?limit=1000");
+      const res = await fetch("/api/products?limit=1000", { cache: "no-store" });
       if (!res.ok) throw new Error("Failed to fetch products");
       const data = await res.json();
       
@@ -119,34 +205,47 @@ const handleImageUpload = (
 ) => {
   const files = e.target.files;
 
-  if (!files) return;
+  if (!files || files.length === 0) return;
 
-  const newPreviewUrls: string[] = [];
-  const newImagePaths: string[] = [];
+  const validFiles = Array.from(files).filter((file) => {
+    const fileType = file.type.toLowerCase();
+    const fileName = file.name.toLowerCase();
+    const isAllowed =
+      allowedImageTypes.includes(fileType) ||
+      [".png", ".jpg", ".jpeg", ".heic", ".heif"].some((ext) =>
+        fileName.endsWith(ext),
+      );
 
-  Array.from(files).forEach((file) => {
-    newPreviewUrls.push(URL.createObjectURL(file));
+    if (!isAllowed) {
+      setError(
+        `Unsupported file type: ${file.name}. Please upload PNG, JPEG, JPG, or HEIC images.`,
+      );
+    }
 
-    newImagePaths.push(`/images/${file.name}`);
+    return isAllowed;
   });
 
-  // Append previews
-  setUploadedImages((prev) => [
-    ...prev,
-    ...newPreviewUrls,
-  ]);
+  if (validFiles.length === 0) {
+    e.target.value = "";
+    return;
+  }
 
-  // Append image paths
-  setFormData((prev) => {
-    const existingImages = prev.images
-      ? prev.images.split(", ")
-      : [];
+  setError("");
 
-    return {
-      ...prev,
-      images: [...existingImages, ...newImagePaths].join(", "),
-    };
-  });
+  Promise.all(validFiles.map((file) => convertHeicToJpeg(file)))
+    .then((dataUrls) => {
+      setUploadedImages((prev) => [...prev, ...dataUrls]);
+      setFormData((prev) => ({
+        ...prev,
+        images: [...prev.images, ...dataUrls],
+      }));
+    })
+    .catch((err) => {
+      console.error("Error converting image files:", err);
+      setError("Failed to process one or more images. Please try again.");
+    });
+
+  e.target.value = "";
 }; 
 
 const removeImage = (index: number) => {
@@ -155,14 +254,10 @@ const removeImage = (index: number) => {
 
   setUploadedImages(updatedPreviews);
 
-  const updatedPaths = formData.images
-    .split(", ")
-    .filter((_, i) => i !== index);
-
-  setFormData({
-    ...formData,
-    images: updatedPaths.join(", "),
-  });
+  setFormData((prev) => ({
+    ...prev,
+    images: prev.images.filter((_, i) => i !== index),
+  }));
 }; 
   const filterProducts = () => {
     let filtered = products.filter(
@@ -188,11 +283,21 @@ const removeImage = (index: number) => {
         !formData.name ||
         !formData.sku ||
         !formData.price ||
-        !formData.stock
+        !formData.stock ||
+        !formData.categoryId
       ) {
-        setError("Please fill in all required fields");
+        setError("Please fill in all required fields including category");
+        setStatusDialog({
+          type: "error",
+          title: "Product not saved",
+          message: "Please fill in all required fields including category.",
+        });
+        setStatusDialogOpen(true);
         return;
       }
+
+      setIsSubmitting(true);
+      setError("");
 
       const payload = {
         name: formData.name,
@@ -204,9 +309,7 @@ const removeImage = (index: number) => {
         stock: parseInt(formData.stock),
         description: formData.description,
         categoryId: formData.categoryId,
-        images: formData.images
-          ? formData.images.split(",").map((img) => img.trim())
-          : [],
+        images: formData.images || [],
         tags: formData.tags
           ? formData.tags.split(",").map((tag) => tag.trim())
           : [],
@@ -237,10 +340,29 @@ const removeImage = (index: number) => {
       await fetchProducts();
       setFormData(initialFormData);
       setEditingProduct(null);
+      setUploadedImages([]);
       setDialogOpen(false);
+      setStatusDialog({
+        type: "success",
+        title: editingProduct ? "Product updated" : "Product created",
+        message: editingProduct
+          ? "The product was updated successfully."
+          : "The product was created successfully.",
+      });
+      setStatusDialogOpen(true);
     } catch (err) {
       console.error("Error saving product:", err);
-      setError(err instanceof Error ? err.message : "Failed to save product");
+      const message =
+        err instanceof Error ? err.message : "Failed to save product";
+      setError(message);
+      setStatusDialog({
+        type: "error",
+        title: editingProduct ? "Update failed" : "Creation failed",
+        message,
+      });
+      setStatusDialogOpen(true);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -255,7 +377,7 @@ const handleEdit = (product: Product) => {
     stock: product.stock.toString(),
     description: product.description || "",
     categoryId: product.categoryId,
-    images: product.images.join(", "),
+    images: product.images || [],
     tags: product.tags.join(", "),
     sizes:
       product.sizes?.join(", ") ||
@@ -265,10 +387,13 @@ const handleEdit = (product: Product) => {
       "Black,Brown,White,Blue,Red",
   };
 
+  setUploadedImages(product.images || []);
   setFormData(editFormData);
   setDialogOpen(true);
 };
   const handleDelete = async (productId: string) => {
+    setIsSubmitting(true);
+
     try {
       const res = await fetch(`/api/admin/products/${productId}`, {
         method: "DELETE",
@@ -277,14 +402,31 @@ const handleEdit = (product: Product) => {
       if (!res.ok) throw new Error("Failed to delete product");
 
       await fetchProducts();
+      setStatusDialog({
+        type: "success",
+        title: "Product deleted",
+        message: "The product was deleted successfully.",
+      });
+      setStatusDialogOpen(true);
     } catch (err) {
       console.error("Error deleting product:", err);
-      setError(err instanceof Error ? err.message : "Failed to delete product");
+      const message =
+        err instanceof Error ? err.message : "Failed to delete product";
+      setError(message);
+      setStatusDialog({
+        type: "error",
+        title: "Delete failed",
+        message,
+      });
+      setStatusDialogOpen(true);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const handleNewProduct = () => {
     setEditingProduct(null);
+    setUploadedImages([]);
     setFormData(initialFormData);
     setDialogOpen(true);
   };
@@ -397,14 +539,21 @@ const handleEdit = (product: Product) => {
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium">Category ID</label>
-                  <Input
+                  <label className="text-sm font-medium">Category</label>
+                  <select
                     value={formData.categoryId}
                     onChange={(e) =>
                       setFormData({ ...formData, categoryId: e.target.value })
                     }
-                    placeholder="Category ID"
-                  />
+                    className="w-full px-3 py-2 border rounded-md text-sm bg-white"
+                  >
+                    <option value="">Select a category</option>
+                    {categories.map((category) => (
+                      <option key={category.id} value={category.id}>
+                        {category.name}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               </div>
 
@@ -427,7 +576,7 @@ const handleEdit = (product: Product) => {
 
   <input
     type="file"
-    accept="image/*"
+    accept=".png,.jpg,.jpeg,.heic,.heif,image/png,image/jpeg,image/heic,image/heif"
     multiple
     onChange={handleImageUpload}
     className="w-full border rounded-md p-2 text-sm"
@@ -513,6 +662,7 @@ const handleEdit = (product: Product) => {
                   onClick={() => {
                     setDialogOpen(false);
                     setEditingProduct(null);
+                    setUploadedImages([]);
                     setFormData(initialFormData);
                   }}
                 >
@@ -520,12 +670,51 @@ const handleEdit = (product: Product) => {
                 </Button>
                 <Button
                   type="submit"
-                  className="bg-orange-500 hover:bg-orange-600 cursor-pointer"
+                  disabled={isSubmitting}
+                  className="bg-orange-500 hover:bg-orange-600 cursor-pointer disabled:opacity-70"
                 >
-                  {editingProduct ? "Update Product" : "Create Product"}
+                  {isSubmitting ? (
+                    <span className="flex items-center gap-2">
+                      <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                      {editingProduct ? "Updating..." : "Creating..."}
+                    </span>
+                  ) : (
+                    editingProduct ? "Update Product" : "Create Product"
+                  )}
                 </Button>
               </div>
             </form>
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={statusDialogOpen} onOpenChange={setStatusDialogOpen}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle
+                className={
+                  statusDialog.type === "success" ? "text-green-700" : "text-red-700"
+                }
+              >
+                {statusDialog.title}
+              </DialogTitle>
+              <DialogDescription>{statusDialog.message}</DialogDescription>
+            </DialogHeader>
+
+            <div className="flex flex-col items-center justify-center py-4">
+              {statusDialog.type === "success" ? (
+                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-green-100 text-3xl text-green-700">
+                  ✓
+                </div>
+              ) : (
+                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-red-100 text-3xl text-red-700">
+                  !
+                </div>
+              )}
+            </div>
+
+            <div className="flex justify-end">
+              <Button onClick={() => setStatusDialogOpen(false)}>Close</Button>
+            </div>
           </DialogContent>
         </Dialog>
       </div>
@@ -690,9 +879,17 @@ const handleEdit = (product: Product) => {
 
                                   <AlertDialogAction
                                     onClick={() => handleDelete(product.id)}
-                                    className="bg-red-600 hover:bg-red-700"
+                                    disabled={isSubmitting}
+                                    className="bg-red-600 hover:bg-red-700 disabled:opacity-70"
                                   >
-                                    Delete Product
+                                    {isSubmitting ? (
+                                      <span className="flex items-center gap-2">
+                                        <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                                        Deleting...
+                                      </span>
+                                    ) : (
+                                      "Delete Product"
+                                    )}
                                   </AlertDialogAction>
                                 </AlertDialogFooter>
                               </AlertDialogContent>

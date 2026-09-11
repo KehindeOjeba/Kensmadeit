@@ -55,7 +55,6 @@ export default function SignInForm() {
         <Input
           id="email"
           type="email"
-          placeholder="admin@example.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
@@ -70,7 +69,6 @@ export default function SignInForm() {
         <Input
           id="password"
           type="password"
-          placeholder="••••••••"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
@@ -82,11 +80,7 @@ export default function SignInForm() {
         {loading ? 'Signing in...' : 'Sign In'}
       </Button>
 
-      <div className="p-3 bg-orange-50 rounded-lg text-sm text-gray-600">
-        <p className="font-semibold mb-2">Demo Credentials:</p>
-        <p>Email: admin@kensmadeit.com</p>
-        <p>Password: admin123</p>
-      </div>
+      
     </form>
   );
 }
