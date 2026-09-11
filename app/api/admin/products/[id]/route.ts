@@ -87,8 +87,18 @@ export async function DELETE(
   try {
     const { id } = await params;
 
-    await prisma.product.delete({
-      where: { id },
+    await prisma.$transaction(async (tx) => {
+      await tx.review.deleteMany({
+        where: { productId: id },
+      });
+
+      await tx.orderItem.deleteMany({
+        where: { productId: id },
+      });
+
+      await tx.product.delete({
+        where: { id },
+      });
     });
 
     return NextResponse.json({
@@ -99,7 +109,7 @@ export async function DELETE(
     console.error('Error deletinggggggg', error);
 
     return NextResponse.json(
-      { error: 'Failed to delete product' },
+      { error: error instanceof Error ? error.message : 'Failed to delete product' },
       { status: 500 }
     );
   }
